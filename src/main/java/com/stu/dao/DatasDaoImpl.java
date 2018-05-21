@@ -1,6 +1,5 @@
 package com.stu.dao;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -21,7 +20,7 @@ public class DatasDaoImpl extends DataBaseDao {
 			psmt.setString(3, data.getUrl());
 			psmt.setString(4, data.getAuthor());
 			psmt.setInt(5, data.getSize());
-			psmt.setDate(6, (Date) data.getUp_time());
+			psmt.setDate(6, data.getUp_time());
 			psmt.setBoolean(7, data.isUseful());
 			psmt.setLong(8, data.getCan_use());
 			psmt.setString(9, data.getFile_id());
@@ -36,16 +35,24 @@ public class DatasDaoImpl extends DataBaseDao {
 		return false;
 	}
 
-	public boolean delete(String id) {
-		String sql="delete from files where file_id=?";
+	public boolean delete(String file_id) {
+		String sql = "delete from files where file_id=?";
 		try {
 			PreparedStatement psmt = getConnection().prepareStatement(sql);
-			psmt.setString(1, id);
+			psmt.setString(1, file_id);
 			return psmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public void findByType(String type) {
+
+	}
+
+	public void findAll() {
+
 	}
 
 }

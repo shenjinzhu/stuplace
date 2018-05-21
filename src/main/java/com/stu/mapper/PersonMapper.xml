@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>    
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.sjz.dao.PersonDao">  
+<!--设置domain类和数据库中表的字段一一对应，注意数据库字段和domain类中的字段名称不致，此处一定要！-->  
+    <resultMap id="BaseResultMap" type="com.stu.bean.Datas">  
+        <id column="id" property="id" jdbcType="INTEGER" />  
+        <result column="title" property="title" jdbcType="VARCHAR" />  
+        <result column="display" property="display" jdbcType="VARCHAR" />
+        <result column="url"      property="url" jdbcType="INTEGER"/>  
+        <result column="author"      property="author" jdbcType="VARCHAR"/>  
+        <result column="size"    property="size" jdbcType="INTEGER"/>  
+        <result column="up_time"     property="up_time" jdbcType="DATE"/>  
+        <result column="down_time"    property="down_time" jdbcType="INTEGER"/> 
+        <result column="useful"  property="useful" jdbcType="BOOLEAN"/> 
+        <result column="can_use"  property="can_use" jdbcType="INTEGER"/> 
+        <result column="zan" property="zan" jdbcType="INTEGER"/>
+        <result column="cai"    property="cai" jdbcType="INTEGER"/>
+        <result column="file_id"    property="answer" jdbcType="VARCHAR"/>
+    </resultMap>  
+    <select id="selectDatasById" parameterType="string" resultType="com.stu.bean.Datas">
+    	select * from files where file_id=#{file_id}
+    </select>
+    
+    <insert id="addPerson" parameterType="com.sjz.entity.Person">
+    	insert into person
+    	(id,username,password,age,sex,email,iden,state,question,answer) 
+    	values(
+    		#{personId},
+    		#{userName},
+    		#{passWord},
+    		#{age},
+    		#{sex},
+    		#{email},
+    		2,0,
+    		#{question},
+    		#{answer}
+    	)
+    </insert>
+    <select id="selectPersonByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">  
+    SELECT *  
+    FROM person  
+    WHERE 1 = 1  
+    <if test="userName != null and userName !=''">  
+        AND username = #{userName,jdbcType=VARCHAR}  
+    </if>  
+    ORDER BY id 
+	</select>  
+	
+	<delete id="deleteById" parameterType="int">
+		delete from person where id= #{personId}
+	</delete> 
+    <update id="updatePerson" parameterType="com.sjz.entity.Person">
+    	update person
+    	<trim prefix="SET" suffixOverrides=","> 
+    		<if test="userName!=null">
+    			username=#{userName},
+    		</if>
+    		<if test="passWord!=null">
+    			password=#{passWord},
+    		</if>
+    		<if test="age!=null">
+    			age=#{age},
+    		</if>
+    		<if test="sex!=null">
+    			sex=#{sex},
+    		</if>
+    		<if test="email!=null">
+    			email=#{email},
+    		</if>
+    		<if test="iden!=null">
+    			iden=#{iden},
+    		</if>
+    		<if test="state!=null">
+    			state=#{state},
+    		</if>
+    		<if test="lastLogin!=null">
+    			lastLogin=#{lastLogin},
+    		</if>
+    		<if test="po!=null">
+    			po=#{po},
+    		</if>
+    		<if test="now!=null">
+    			now=#{now}
+    		</if>
+    	</trim>
+    	where id=#{personId}
+    </update>
+    
+    <update id="updatePersonPassword" parameterType="com.sjz.entity.Person">
+    	update person set password=#{passWord}
+    	where id=#{personId}
+    </update>
+    
+    <update id="updatePo" parameterType="com.sjz.entity.Person">
+    	update person set po=#{po},state=1,lastLogin=now()
+    	where id=#{personId}
+    </update>
+    <select id="selectByNameForadd" parameterType="java.lang.String" resultType="com.sjz.entity.Person">
+    	select * from person where username=#{userName}
+    </select>
+    
+</mapper>  
