@@ -25,7 +25,8 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	<!-- 开启Aspect -->
-	<aop:aspectj-autoproxy />
+	
+	
 	<context:property-placeholder
 		ignore-unresolvable="true" location="classpath:datasource.properties" />
 	<!-- <bean id="firstRun" class="com.stu.manage.handle.DbDepot" scope="singleton" 
@@ -56,9 +57,9 @@
 	<!-- 配置Mybatis的文件 ，mapperLocations配置**Mapper.xml文件位置，configLocation配置mybatis-config文件位置 -->
 	<bean id="sqlSessionFactory"
 		class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="mysqlConnection" />
 		<property name="mapperLocations"
-			value="classpath*:com/sjz/mapper/**/*.xml" />
+			value="classpath*:com/sjz/mapper/*.xml" />
 		<property name="configLocation"
 			value="classpath:mybatis-config.xml" />
 		<!-- <property name="typeAliasesPackage" value="com.tiantian.ckeditor.model" 

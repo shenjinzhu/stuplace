@@ -22,21 +22,22 @@
     	select * from files where file_id=#{file_id}
     </select>
     
-    <insert id="addPerson" parameterType="com.sjz.entity.Person">
-    	insert into person
-    	(id,username,password,age,sex,email,iden,state,question,answer) 
+    <insert id="insertDatas" parameterType="com.stu.bean.Datas">
+    	insert into Datas
+    	(title,display,url,author,size,up_time,useful,can_use,file_id,zan,cai) 
     	values(
-    		#{personId},
-    		#{userName},
-    		#{passWord},
-    		#{age},
-    		#{sex},
-    		#{email},
-    		2,0,
-    		#{question},
-    		#{answer}
+    		#{title},
+    		#{display},
+    		#{url},
+    		#{author},
+    		#{size},
+    		#{up_time},
+    		#{useful},
+    		#{can_use}
+    		#{file_id},0,0
     	)
     </insert>
+    <!--  
     <select id="selectPersonByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">  
     SELECT *  
     FROM person  
@@ -99,5 +100,5 @@
     <select id="selectByNameForadd" parameterType="java.lang.String" resultType="com.sjz.entity.Person">
     	select * from person where username=#{userName}
     </select>
-    
+    -->
 </mapper>  
