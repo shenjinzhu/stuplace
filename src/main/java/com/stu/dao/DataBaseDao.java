@@ -1,312 +1,317 @@
-package com.stu.dao;
-
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.alibaba.druid.pool.DruidDataSource;
-import com.stu.orm.ORM;
-
-public abstract class DataBaseDao {
-
-	@Autowired
-	private DruidDataSource ds;
-
-	/**
-	 * »ñÈ¡Êý¾Ý¿âÁ¬½Ó
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
-	protected Connection getConnection() throws SQLException {
-		return (Connection) ds.getConnection();
-	}
-
-	private static final Logger log = LoggerFactory.getLogger(DataBaseDao.class);
-
-	/**
-	 * ´´½¨²éÑ¯
-	 * 
-	 * @Title: createQuery
-	 * @param sql
-	 * @param param
-	 * @return List<?>
-	 * @throws Exception
-	 */
-	protected List<?> createQuery(String sql, Object... param) throws Exception {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		List<Object[]> list = new ArrayList<Object[]>();
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			if (param != null) {
-				setParams(pstmt, param);
-			}
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				ResultSetMetaData rsmd = rs.getMetaData();
-				int columnCount = rsmd.getColumnCount();
-				Object[] objs = new Object[columnCount];
-				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-					objs[i - 1] = rs.getObject(i);
-				}
-				list.add(objs);
-			}
-		} catch (Exception e) {
-			log.error("²éÑ¯³ö´í", e);
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-			} catch (SQLException e) {
-			}
-			try {
-				if (pstmt != null)
-					pstmt.close();
-			} catch (SQLException e) {
-			}
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * ²éÑ¯½á¹û¼¯´óÐ¡
-	 * 
-	 * @param sql
-	 * @param param
-	 * @return Integer
-	 * @throws Exception
-	 */
-	protected Integer QueryRows(String sql, Object... param) throws Exception {
-		Integer result = null;
-		if (sql != null) {
-			Connection con = null;
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			try {
-				sql = "select count(1) from(" + sql + ")";
-				con = getConnection();
-				pstmt = con.prepareStatement(sql);
-				if (param != null) {
-					setParams(pstmt, param);
-				}
-				rs = pstmt.executeQuery();
-				if (rs.next())
-					result = rs.getInt(1);
-			} catch (Exception e) {
-				log.error("²éÑ¯½á¹û¼¯³ö´í", e);
-			} finally {
-				try {
-					if (rs != null)
-						rs.close();
-				} catch (SQLException e) {
-				}
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException e) {
-				}
-				try {
-					if (con != null)
-						con.close();
-				} catch (SQLException e) {
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Ö´ÐÐsqlÓï¾ä£¨ÎÞ²ÎÊý»ò²ÎÊý²»º¬null£©
-	 * 
-	 * @param sql
-	 * @param param
-	 * @throws Exception
-	 * @return void
-	 */
-	protected void execute(String sql, Object... param) throws Exception {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			if (param != null) {
-				setParams(pstmt, param);
-			}
-			pstmt.execute();
-		} finally {
-			try {
-				if (pstmt != null)
-					pstmt.close();
-			} catch (SQLException e) {
-			}
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-			}
-		}
-	}
-
-	/**
-	 * Ö´ÐÐsqlÓï¾ä£¨²ÎÊý¿Éº¬ÓÐnull£©
-	 * 
-	 * @param sql
-	 * @param clazz
-	 * @param fields
-	 * @param param
-	 * @throws Exception
-	 * @return void
-	 */
-	protected void execute(String sql, Class<?> clazz, String fields, Object... param) throws Exception {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			if (param != null) {
-				setParamsEx(clazz, pstmt, fields, param);
-			}
-			pstmt.execute();
-		} finally {
-			try {
-				if (pstmt != null)
-					pstmt.close();
-			} catch (SQLException e) {
-			}
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-			}
-		}
-	}
-
-	/***
-	 * ÉèÖÃ²éÑ¯²ÎÊý£¬²ÎÊýÒ»¶¨²»Îªnull
-	 * 
-	 * @Description: ÉèÖÃ²éÑ¯²ÎÊý£¬²ÎÊýÒ»¶¨²»Îªnull
-	 * @return void
-	 */
-	protected void setParams(PreparedStatement pstmt, Object[] param) throws Exception {
-		for (int i = 0; i < param.length; i++) {
-			int parameterIndex = i + 1;
-			if (param[i] instanceof String)
-				pstmt.setString(parameterIndex, (String) param[i]);
-			else if (param[i] instanceof Short)
-				pstmt.setShort(parameterIndex, (short) param[i]);
-			else if (param[i] instanceof Long)
-				pstmt.setLong(parameterIndex, (long) param[i]);
-			else if (param[i] instanceof Integer)
-				pstmt.setInt(parameterIndex, (int) param[i]);
-			else if (param[i] instanceof Timestamp)
-				pstmt.setTimestamp(parameterIndex, (Timestamp) param[i]);
-			else if (param[i] instanceof Date)
-				pstmt.setDate(parameterIndex, new java.sql.Date(((Date) param[i]).getTime()));
-			else if (param[i] instanceof Byte)
-				pstmt.setByte(parameterIndex, (byte) param[i]);
-			else if (param[i] instanceof Double)
-				pstmt.setFloat(parameterIndex, (float) param[i]);
-			else if (param[i] instanceof Boolean)
-				pstmt.setBoolean(parameterIndex, (boolean) param[i]);
-			else {
-				throw new Exception("createQuery: Param Type unknown:" + param[i]);
-			}
-		}
-	}
-
-	/***
-	 * ÉèÖÃ²éÑ¯²ÎÊý£¬²ÎÊý¿ÉÒÔÎªnull
-	 * 
-	 * @Description: ÉèÖÃ²éÑ¯²ÎÊý£¬²ÎÊý¿ÉÒÔÎªnull
-	 * @return void
-	 */
-	protected void setParamsEx(Class<?> clazz, PreparedStatement pstmt, String fields, Object... param)
-			throws Exception {
-		String[] attrs = fields.replaceAll(" ", "").split(",");
-		for (int i = 0; i < param.length; i++) {
-			int parameterIndex = i + 1;
-			if (param[i] == null) {
-				Method method = ORM.getMethod(clazz, "get" + ORM.captureName(attrs[i]));
-				Class<?> clz = method.getReturnType();
-				pstmt.setNull(parameterIndex, getDBType(clz));
-			} else {
-				if (param[i] instanceof String)
-					pstmt.setString(parameterIndex, (String) param[i]);
-				else if (param[i] instanceof Short)
-					pstmt.setShort(parameterIndex, (short) param[i]);
-				else if (param[i] instanceof Long)
-					pstmt.setLong(parameterIndex, (long) param[i]);
-				else if (param[i] instanceof Integer)
-					pstmt.setInt(parameterIndex, (int) param[i]);
-				else if (param[i] instanceof Timestamp)
-					pstmt.setTimestamp(parameterIndex, (Timestamp) param[i]);
-				else if (param[i] instanceof Date)
-					pstmt.setDate(parameterIndex, new java.sql.Date(((Date) param[i]).getTime()));
-				else if (param[i] instanceof Byte)
-					pstmt.setByte(parameterIndex, (byte) param[i]);
-				else if (param[i] instanceof Double)
-					pstmt.setDouble(parameterIndex, (double) param[i]);
-				else if (param[i] instanceof Boolean)
-					pstmt.setBoolean(parameterIndex, (boolean) param[i]);
-				else {
-					throw new Exception("setParamsAndNull: Param Type unknown:" + param[i]);
-				}
-			}
-		}
-	}
-
-	/**
-	 * »ñÈ¡Êý¾Ý¿â»ù±¾ÀàÐÍ
-	 * 
-	 * @param clazz
-	 * @throws Exception
-	 * @return int
-	 */
-	private static int getDBType(Class<?> clazz) throws Exception {
-		if (clazz == String.class)
-			return Types.VARCHAR;
-		else if (clazz == Short.class)
-			return Types.SMALLINT;
-		else if (clazz == Long.class)
-			return Types.BIGINT;
-		else if (clazz == Integer.class)
-			return Types.INTEGER;
-		else if (clazz == Timestamp.class)
-			return Types.TIMESTAMP;
-		else if (clazz == Date.class)
-			return Types.TIME;
-		else if (clazz == Byte.class)
-			return Types.SMALLINT;
-		else if (clazz == Double.class)
-			return Types.DECIMAL;
-		else if (clazz == Boolean.class)
-			return Types.BOOLEAN;
-		else if (clazz == Short.class)
-			return Types.SMALLINT;
-		else if (clazz == Short.class)
-			return Types.SMALLINT;
-		else {
-			throw new Exception("getDBType: Param Type unknown:" + clazz);
-		}
-	}
-}
+// package com.stu.dao;
+//
+// import java.lang.reflect.Method;
+// import java.sql.Connection;
+// import java.sql.PreparedStatement;
+// import java.sql.ResultSet;
+// import java.sql.ResultSetMetaData;
+// import java.sql.SQLException;
+// import java.sql.Timestamp;
+// import java.sql.Types;
+// import java.util.ArrayList;
+// import java.util.Date;
+// import java.util.List;
+//
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+// import org.springframework.beans.factory.annotation.Autowired;
+//
+// import com.alibaba.druid.pool.DruidDataSource;
+// import com.stu.orm.ORM;
+//
+// public abstract class DataBaseDao {
+//
+// @Autowired
+// private DruidDataSource ds;
+//
+// /**
+// * ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½
+// *
+// * @return
+// * @throws SQLException
+// */
+// protected Connection getConnection() throws SQLException {
+// return (Connection) ds.getConnection();
+// }
+//
+// private static final Logger log = LoggerFactory.getLogger(DataBaseDao.class);
+//
+// /**
+// * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯
+// *
+// * @Title: createQuery
+// * @param sql
+// * @param param
+// * @return List<?>
+// * @throws Exception
+// */
+// protected List<?> createQuery(String sql, Object... param) throws Exception {
+// Connection con = null;
+// PreparedStatement pstmt = null;
+// ResultSet rs = null;
+// List<Object[]> list = new ArrayList<Object[]>();
+// try {
+// con = getConnection();
+// pstmt = con.prepareStatement(sql);
+// if (param != null) {
+// setParams(pstmt, param);
+// }
+// rs = pstmt.executeQuery();
+// while (rs.next()) {
+// ResultSetMetaData rsmd = rs.getMetaData();
+// int columnCount = rsmd.getColumnCount();
+// Object[] objs = new Object[columnCount];
+// for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+// objs[i - 1] = rs.getObject(i);
+// }
+// list.add(objs);
+// }
+// } catch (Exception e) {
+// log.error("ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½", e);
+// } finally {
+// try {
+// if (rs != null)
+// rs.close();
+// } catch (SQLException e) {
+// }
+// try {
+// if (pstmt != null)
+// pstmt.close();
+// } catch (SQLException e) {
+// }
+// try {
+// if (con != null)
+// con.close();
+// } catch (SQLException e) {
+// }
+// }
+// return list;
+// }
+//
+// /**
+// * ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡
+// *
+// * @param sql
+// * @param param
+// * @return Integer
+// * @throws Exception
+// */
+// protected Integer QueryRows(String sql, Object... param) throws Exception {
+// Integer result = null;
+// if (sql != null) {
+// Connection con = null;
+// PreparedStatement pstmt = null;
+// ResultSet rs = null;
+// try {
+// sql = "select count(1) from(" + sql + ")";
+// con = getConnection();
+// pstmt = con.prepareStatement(sql);
+// if (param != null) {
+// setParams(pstmt, param);
+// }
+// rs = pstmt.executeQuery();
+// if (rs.next())
+// result = rs.getInt(1);
+// } catch (Exception e) {
+// log.error("ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", e);
+// } finally {
+// try {
+// if (rs != null)
+// rs.close();
+// } catch (SQLException e) {
+// }
+// try {
+// if (pstmt != null)
+// pstmt.close();
+// } catch (SQLException e) {
+// }
+// try {
+// if (con != null)
+// con.close();
+// } catch (SQLException e) {
+// }
+// }
+// }
+// return result;
+// }
+//
+// /**
+// * Ö´ï¿½ï¿½sqlï¿½ï¿½ä£¨ï¿½Þ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½nullï¿½ï¿½
+// *
+// * @param sql
+// * @param param
+// * @throws Exception
+// * @return void
+// */
+// protected void execute(String sql, Object... param) throws Exception {
+// Connection con = null;
+// PreparedStatement pstmt = null;
+// try {
+// con = getConnection();
+// pstmt = con.prepareStatement(sql);
+// if (param != null) {
+// setParams(pstmt, param);
+// }
+// pstmt.execute();
+// } finally {
+// try {
+// if (pstmt != null)
+// pstmt.close();
+// } catch (SQLException e) {
+// }
+// try {
+// if (con != null)
+// con.close();
+// } catch (SQLException e) {
+// }
+// }
+// }
+//
+// /**
+// * Ö´ï¿½ï¿½sqlï¿½ï¿½ä£¨ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½ï¿½nullï¿½ï¿½
+// *
+// * @param sql
+// * @param clazz
+// * @param fields
+// * @param param
+// * @throws Exception
+// * @return void
+// */
+// protected void execute(String sql, Class<?> clazz, String fields, Object...
+// param) throws Exception {
+// Connection con = null;
+// PreparedStatement pstmt = null;
+// try {
+// con = getConnection();
+// pstmt = con.prepareStatement(sql);
+// if (param != null) {
+// setParamsEx(clazz, pstmt, fields, param);
+// }
+// pstmt.execute();
+// } finally {
+// try {
+// if (pstmt != null)
+// pstmt.close();
+// } catch (SQLException e) {
+// }
+// try {
+// if (con != null)
+// con.close();
+// } catch (SQLException e) {
+// }
+// }
+// }
+//
+// /***
+// * ï¿½ï¿½ï¿½Ã²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Îªnull
+// *
+// * @Description: ï¿½ï¿½ï¿½Ã²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Îªnull
+// * @return void
+// */
+// protected void setParams(PreparedStatement pstmt, Object[] param) throws
+// Exception {
+// for (int i = 0; i < param.length; i++) {
+// int parameterIndex = i + 1;
+// if (param[i] instanceof String)
+// pstmt.setString(parameterIndex, (String) param[i]);
+// else if (param[i] instanceof Short)
+// pstmt.setShort(parameterIndex, (short) param[i]);
+// else if (param[i] instanceof Long)
+// pstmt.setLong(parameterIndex, (long) param[i]);
+// else if (param[i] instanceof Integer)
+// pstmt.setInt(parameterIndex, (int) param[i]);
+// else if (param[i] instanceof Timestamp)
+// pstmt.setTimestamp(parameterIndex, (Timestamp) param[i]);
+// else if (param[i] instanceof Date)
+// pstmt.setDate(parameterIndex, new java.sql.Date(((Date)
+// param[i]).getTime()));
+// else if (param[i] instanceof Byte)
+// pstmt.setByte(parameterIndex, (byte) param[i]);
+// else if (param[i] instanceof Double)
+// pstmt.setFloat(parameterIndex, (float) param[i]);
+// else if (param[i] instanceof Boolean)
+// pstmt.setBoolean(parameterIndex, (boolean) param[i]);
+// else {
+// throw new Exception("createQuery: Param Type unknown:" + param[i]);
+// }
+// }
+// }
+//
+// /***
+// * ï¿½ï¿½ï¿½Ã²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªnull
+// *
+// * @Description: ï¿½ï¿½ï¿½Ã²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªnull
+// * @return void
+// */
+// protected void setParamsEx(Class<?> clazz, PreparedStatement pstmt, String
+// fields, Object... param)
+// throws Exception {
+// String[] attrs = fields.replaceAll(" ", "").split(",");
+// for (int i = 0; i < param.length; i++) {
+// int parameterIndex = i + 1;
+// if (param[i] == null) {
+// Method method = ORM.getMethod(clazz, "get" + ORM.captureName(attrs[i]));
+// Class<?> clz = method.getReturnType();
+// pstmt.setNull(parameterIndex, getDBType(clz));
+// } else {
+// if (param[i] instanceof String)
+// pstmt.setString(parameterIndex, (String) param[i]);
+// else if (param[i] instanceof Short)
+// pstmt.setShort(parameterIndex, (short) param[i]);
+// else if (param[i] instanceof Long)
+// pstmt.setLong(parameterIndex, (long) param[i]);
+// else if (param[i] instanceof Integer)
+// pstmt.setInt(parameterIndex, (int) param[i]);
+// else if (param[i] instanceof Timestamp)
+// pstmt.setTimestamp(parameterIndex, (Timestamp) param[i]);
+// else if (param[i] instanceof Date)
+// pstmt.setDate(parameterIndex, new java.sql.Date(((Date)
+// param[i]).getTime()));
+// else if (param[i] instanceof Byte)
+// pstmt.setByte(parameterIndex, (byte) param[i]);
+// else if (param[i] instanceof Double)
+// pstmt.setDouble(parameterIndex, (double) param[i]);
+// else if (param[i] instanceof Boolean)
+// pstmt.setBoolean(parameterIndex, (boolean) param[i]);
+// else {
+// throw new Exception("setParamsAndNull: Param Type unknown:" + param[i]);
+// }
+// }
+// }
+// }
+//
+// /**
+// * ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// *
+// * @param clazz
+// * @throws Exception
+// * @return int
+// */
+// private static int getDBType(Class<?> clazz) throws Exception {
+// if (clazz == String.class)
+// return Types.VARCHAR;
+// else if (clazz == Short.class)
+// return Types.SMALLINT;
+// else if (clazz == Long.class)
+// return Types.BIGINT;
+// else if (clazz == Integer.class)
+// return Types.INTEGER;
+// else if (clazz == Timestamp.class)
+// return Types.TIMESTAMP;
+// else if (clazz == Date.class)
+// return Types.TIME;
+// else if (clazz == Byte.class)
+// return Types.SMALLINT;
+// else if (clazz == Double.class)
+// return Types.DECIMAL;
+// else if (clazz == Boolean.class)
+// return Types.BOOLEAN;
+// else if (clazz == Short.class)
+// return Types.SMALLINT;
+// else if (clazz == Short.class)
+// return Types.SMALLINT;
+// else {
+// throw new Exception("getDBType: Param Type unknown:" + clazz);
+// }
+// }
+// }

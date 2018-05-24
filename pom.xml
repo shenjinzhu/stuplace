@@ -10,6 +10,12 @@
 
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.10</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
@@ -21,18 +27,15 @@
 			<artifactId>mybatis</artifactId>
 			<version>3.4.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.41</version>
+			<version>5.1.36</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid</artifactId>
-			<version>1.0.28</version>
-		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.alibaba/druid <dependency> 
+			<groupId>com.alibaba</groupId> <artifactId>druid</artifactId> <version>1.0.28</version> 
+			</dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -88,42 +91,22 @@
 			<artifactId>aspectjrt</artifactId>
 			<version>1.8.10</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-expression -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<!--对Spring 对JDBC 数据访问进行封装的所有类 -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-expression</artifactId>
-			<version>4.3.7.RELEASE</version>
+			<artifactId>spring-jdbc</artifactId>
+			<version>4.1.6.RELEASE</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>4.3.7.RELEASE</version>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.2.2</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>4.3.7.RELEASE</version>
-		</dependency>
-		 <!-- 导入dbcp的jar包，用来在spring-mybatis.xml中配置数据库 -->
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
-        </dependency>
-
-        <!--对Spring 对JDBC 数据访问进行封装的所有类-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>4.1.6.RELEASE</version>
-        </dependency>
-		 <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>1.2.2</version>
-        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
