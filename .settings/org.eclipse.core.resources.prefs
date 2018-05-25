@@ -1,4 +1,3 @@
 eclipse.preferences.version=1
-encoding//src/main/java/com/stu/dao/DatasDaoImpl.java=gbk
+encoding//src/main/java/com/stu/bean/Datas.java=gbk
 encoding//src/main/java/com/stu/orm/BeanFactory.java=UTF-8
-encoding//src/test/java/studyPlace/DatasDaoTest.java=gbk

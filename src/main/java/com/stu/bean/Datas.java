@@ -1,7 +1,7 @@
 package com.stu.bean;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 /**
  * ×ÊÔ´
@@ -23,13 +23,15 @@ public class Datas implements Serializable {
 	private int zan;
 	private int cai;// ²È
 	private String file_id;
+	private String type;
+	private PageHelp page;
 
-	public String getFile_id() {
-		return file_id;
+	public PageHelp getPage() {
+		return page;
 	}
 
-	public void setFile_id(String file_id) {
-		this.file_id = file_id;
+	public void setPage(PageHelp page) {
+		this.page = page;
 	}
 
 	public String getId() {
@@ -128,11 +130,28 @@ public class Datas implements Serializable {
 		this.cai = cai;
 	}
 
+	public String getFile_id() {
+		return file_id;
+	}
+
+	public void setFile_id(String file_id) {
+		this.file_id = file_id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
 		return "Datas [id=" + id + ", title=" + title + ", display=" + display + ", url=" + url + ", author=" + author
 				+ ", size=" + size + ", up_time=" + up_time + ", down_time=" + down_time + ", useful=" + useful
-				+ ", can_use=" + can_use + ", zan=" + zan + ", cai=" + cai + "]";
+				+ ", can_use=" + can_use + ", zan=" + zan + ", cai=" + cai + ", file_id=" + file_id + ", type=" + type
+				+ "]";
 	}
 
 }
