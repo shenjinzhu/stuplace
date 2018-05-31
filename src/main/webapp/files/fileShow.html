@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>downLoad</title>
+<link rel="stylesheet"
+	href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
+<script type="text/javascript"
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+	integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+	crossorigin="anonymous"></script>
+<style>
+body {
+	background-image: url("./2.jpg");
+}
+
+#timeCanvas {
+	position: absolute;
+	top: 3%;
+	right: 3%;
+	height: 30px;
+	width: 210px;
+}
+
+.table {
+	position: absolute;
+	left: 15%;
+	top: 7%;
+	width: 70%;
+	z-index: 100;
+}
+
+.table tr {
+	background-color: transparent !important;
+}
+
+.table tr td {
+	border-color: #000 !important;
+}
+</head>
+<body>
+	<canvas id="timeCanvas"></canvas>
+	<canvas id="c_n149" width="1920" height="1080"
+		style="position: fixed; top: 0px; right: 0px;z-index: -1;"></canvas>
+	<script src="./time.js"></script>
+	<script src="./canvas.js"></script>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+			<td>id</td>
+				<td>文件名</td>
+			</tr>
+		</thead>
+		<tbody class="data"></tbody>
+	</table>
+
+	<script>
+    $(function () {
+      var tbody = $('.data')
+
+      var d = []
+
+      function getData() {
+       $(tbody).empty();
+       d = []
+       $.ajax({
+        type: 'get',
+        datatype: 'json',
+        url: '/stuPlace/download ',
+        success: function (data) {
+          data = JSON.parse(data)
+          d = data
+          data.forEach((e, index) => {
+            tbody.append("<tr class='TR'>"
+            +"<td class='id'>"+e.file_id+"</td>"
+            +"<td>"+e.title+"</td>"
+            +"</tr>")
+          })
+        }
+      })
+     }
+
+     getData()
+    })
+</body>
+</html>

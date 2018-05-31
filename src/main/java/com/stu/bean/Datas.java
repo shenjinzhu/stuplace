@@ -15,7 +15,7 @@ public class Datas implements Serializable {
 	private String display;
 	private String url;
 	private String author;// 上传者
-	private int size;// 文件大小
+	private Double size;// 文件大小
 	private Date up_time;// 上传时间
 	private int down_time;// 下载次数
 	private boolean useful;// 是否长期有效
@@ -25,14 +25,6 @@ public class Datas implements Serializable {
 	private String file_id;
 	private String type;
 	private PageHelp page;
-
-	public PageHelp getPage() {
-		return page;
-	}
-
-	public void setPage(PageHelp page) {
-		this.page = page;
-	}
 
 	public String getId() {
 		return id;
@@ -74,11 +66,11 @@ public class Datas implements Serializable {
 		this.author = author;
 	}
 
-	public int getSize() {
+	public Double getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(Double size) {
 		this.size = size;
 	}
 
@@ -144,6 +136,14 @@ public class Datas implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public PageHelp getPage() {
+		return page;
+	}
+
+	public void setPage(PageHelp page) {
+		this.page = page;
 	}
 
 	@Override

@@ -9,7 +9,7 @@
 		<result column="display" property="display" jdbcType="VARCHAR" />
 		<result column="url" property="url" jdbcType="INTEGER" />
 		<result column="author" property="author" jdbcType="VARCHAR" />
-		<result column="size" property="size" jdbcType="INTEGER" />
+		<result column="size" property="size" jdbcType="DOUBLE" />
 		<result column="up_time" property="up_time" jdbcType="TIMESTAMP" />
 		<result column="down_time" property="down_time"
 			jdbcType="INTEGER" />
@@ -52,7 +52,8 @@
 		<if test="display!=null and display!=''">
 			AND display=#{display}
 		</if>
-		order by up_time desc limit #{page.from},#{page.pageSize}
+		order by up_time desc 
+		<!-- limit #{page.from},#{page.pageSize} -->
 	</select>
 
 	<insert id="insertDatas" parameterType="com.stu.bean.Datas">

@@ -32,7 +32,7 @@ public class DatasDaoTest {
 			data.setCan_use(1000 * i);
 			data.setDisplay("22" + i);
 			data.setDown_time(22 * i);
-			data.setSize(12 * i);
+			data.setSize((double) (12 * i));
 			data.setFile_id("1441" + i);
 			data.setUp_time(new Date(System.currentTimeMillis()));
 			data.setUseful(true);
@@ -54,7 +54,7 @@ public class DatasDaoTest {
 		data.setCan_use(1000);
 		data.setDisplay("22改");
 		data.setDown_time(22);
-		data.setSize(12);
+		data.setSize((double) 12);
 		data.setFile_id("1441");
 		data.setUp_time(new Date(System.currentTimeMillis()));
 		data.setUseful(true);

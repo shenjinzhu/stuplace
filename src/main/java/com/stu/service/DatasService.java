@@ -13,4 +13,6 @@ public interface DatasService {
 	Datas findOne(String file_id);
 
 	List<Datas> find(Datas data);
+
+	void deleteById(String file_id);
 }
