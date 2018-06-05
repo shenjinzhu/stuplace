@@ -20,7 +20,7 @@ public class FileServlet {
 
 	@RequestMapping(value = "/upload", produces = "application/json")
 	@ResponseBody
-	private String upFile(HttpServletRequest req, HttpServletResponse res, MultipartFile file) {
+	private String upFile(HttpServletRequest req, HttpServletResponse res, MultipartFile file, String title) {
 		String fileName = file.getOriginalFilename();
 		String path = "/usr/local/files/" + fileName;
 		File targetFile = new File(path);
@@ -34,9 +34,10 @@ public class FileServlet {
 			e.printStackTrace();
 		}
 		Datas d = new Datas();
+		d.setTitle(title);
 		d.setUrl(path);
 		d.setSize((targetFile.length() / 1024) * 1.0);
-		return "redirect:rwsh";
+		return "redirect:show";
 	}
 
 	@RequestMapping(value = "/place")

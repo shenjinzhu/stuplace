@@ -1,7 +1,6 @@
 package studyPlace;
 
 import java.sql.Date;
-import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,10 +71,8 @@ public class DatasDaoTest {
 		p.setSortField("title");
 		Datas d = new Datas();
 		d.setPage(p);
-		List<Datas> list = dao.selectDatasByData(d);
-		for (Datas l : list) {
-			System.out.println(l);
-		}
+		Datas list = dao.selectDatasById("是");
+		System.out.println(list);
 	}
 
 }

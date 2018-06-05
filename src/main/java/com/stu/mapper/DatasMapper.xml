@@ -34,6 +34,7 @@
 	<select id="selectDatasById" parameterType="string"
 		resultType="com.stu.bean.Datas">
 		select * from files where file_id=#{file_id}
+		<!-- like concat('%',#{file_id},'%') -->
 	</select>
 
 	<select id="selectDatasByData"
